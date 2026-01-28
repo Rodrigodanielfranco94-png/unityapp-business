@@ -1,0 +1,37 @@
+<div class="modulo-card">
+    <h3>Nueva Solicitud de Trabajo</h3>
+    <form id="orderForm">
+        <label>¿Qué servicio necesitas?</label>
+        <input type="text" id="servicio" placeholder="Ej: Reparar Aire Acondicionado" required>
+        
+        <label>Descripción detallada:</label>
+        <textarea id="descripcion" placeholder="Explica brevemente el problema..." required></textarea>
+        
+        <button type="submit">Enviar al Administrador</button>
+    </form>
+    <p id="mensajeExito" style="color: green; display: none;">✅ ¡Solicitud enviada con éxito!</p>
+</div>
+
+<script>
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // 1. Capturar los datos
+        const nuevaSolicitud = {
+            id: Date.now(),
+            servicio: document.getElementById('servicio').value,
+            descripcion: document.getElementById('descripcion').value,
+            estado: 'Pendiente', // El jefe debe negociar esto
+            precio: 0
+        };
+
+        // 2. Guardar en la "Base de Datos" (LocalStorage)
+        let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
+        solicitudes.push(nuevaSolicitud);
+        localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
+
+        // 3. Feedback visual
+        document.getElementById('orderForm').reset();
+        document.getElementById('mensajeExito').style.display = 'block';
+    });
+</script>
