@@ -1,0 +1,51 @@
+<div class="modulo-card">
+    <h3>💰 Reporte de Ganancias Reales</h3>
+    <div id="resumenFinanciero" style="background: #e9ecef; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+        </div>
+    
+    <h4>Detalle de Trabajos Facturados</h4>
+    <div id="listaFinalizados">
+        <p>Cargando registros contables...</p>
+    </div>
+</div>
+
+<script>
+    function generarReporte() {
+        const resumen = document.getElementById('resumenFinanciero');
+        const lista = document.getElementById('listaFinalizados');
+        
+        // 1. Obtener todos los datos del sistema
+        let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
+
+        // 2. Filtrar solo los trabajos que el Staff ya terminó
+        const finalizados = solicitudes.filter(s => s.estado === 'Finalizado');
+
+        // 3. Calcular el total acumulado
+        let totalDinero = 0;
+        finalizados.forEach(trabajo => {
+            totalDinero += parseFloat(trabajo.precio);
+        });
+
+        // 4. Mostrar el resumen de ingresos
+        resumen.innerHTML = `
+            <h2 style="margin:0; color: #28a745;">Total Ingresos: $${totalDinero.toFixed(2)}</h2>
+            <p style="margin:5px 0 0 0;">Trabajos completados con éxito: ${finalizados.length}</p>
+        `;
+
+        // 5. Mostrar la lista detallada para auditoría
+        if (finalizados.length === 0) {
+            lista.innerHTML = "<p>Aún no hay ingresos registrados.</p>";
+            return;
+        }
+
+        lista.innerHTML = finalizados.map(f => `
+            <div style="border-bottom: 1px dashed #bbb; padding: 10px; display: flex; justify-content: space-between;">
+                <span><strong>${f.servicio}</strong></span>
+                <span style="color: #28a745; font-weight: bold;">+$${parseFloat(f.precio).toFixed(2)}</span>
+            </div>
+        `).join('');
+    }
+
+    // Ejecutar reporte al abrir
+    generarReporte();
+</script>
