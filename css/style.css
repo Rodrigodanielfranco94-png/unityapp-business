@@ -1,1 +1,79 @@
+:root {
+    --primary: #007AFF;
+    --success: #34C759;
+    --dark: #1C1C1E;
+    --bg: #F2F2F7;
+    --card: #FFFFFF;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg);
+    margin: 0;
+    color: var(--dark);
+}
+
+nav {
+    background: var(--dark);
+    padding: 15px;
+    display: flex;
+    justify-content: space-around;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+nav button {
+    background: transparent;
+    color: #8E8E93;
+    border: none;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 8px 12px;
+    transition: 0.3s;
+}
+
+nav button.active-btn {
+    color: white;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+}
+
+#app-viewport {
+    padding: 20px;
+    max-width: 500px;
+    margin: auto;
+}
+
+.modulo-card {
+    background: var(--card);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+h2, h3 { margin-top: 0; color: var(--dark); }
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #D1D1D6;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-size: 16px; /* Evita zoom automático en iPhone */
+}
+
+button[type="submit"], .btn-main {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
 
