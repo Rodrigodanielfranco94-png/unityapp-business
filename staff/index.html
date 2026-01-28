@@ -1,0 +1,49 @@
+<div class="modulo-card">
+    <h3>Mis Trabajos Asignados</h3>
+    <div id="listaTareas">
+        <p>Buscando tareas pendientes...</p>
+    </div>
+</div>
+
+<script>
+    function cargarTareas() {
+        const contenedor = document.getElementById('listaTareas');
+        // 1. Leer las solicitudes de la base de datos
+        let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
+
+        // 2. Filtrar solo las que ya fueron confirmadas por el Admin
+        const tareasAsignadas = solicitudes.filter(s => s.estado === 'Asignado');
+
+        if (tareasAsignadas.length === 0) {
+            contenedor.innerHTML = "<p>No tienes trabajos pendientes por ahora. ¡Buen trabajo!</p>";
+            return;
+        }
+
+        // 3. Mostrar tareas al empleado
+        contenedor.innerHTML = tareasAsignadas.map((tarea) => `
+            <div style="border: 1px solid #007bff; padding: 15px; margin-bottom: 10px; border-radius: 8px; background-color: #f0f7ff;">
+                <h4>📍 TAREA: ${tarea.servicio}</h4>
+                <p><strong>Detalles:</strong> ${tarea.descripcion}</p>
+                <button onclick="finalizarTarea(${tarea.id})" style="background-color: #28a745; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">
+                    ✅ Marcar como Terminado
+                </button>
+            </div>
+        `).join('');
+    }
+
+    function finalizarTarea(id) {
+        let solicitudes = JSON.parse(localStorage.getItem('solicitudes'));
+        
+        // 4. Buscar el trabajo y cambiar su estado a 'Finalizado'
+        const index = solicitudes.findIndex(s => s.id === id);
+        if (index !== -1) {
+            solicitudes[index].estado = 'Finalizado';
+            localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
+            alert("¡Trabajo completado! La información se envió a Contabilidad.");
+            cargarTareas();
+        }
+    }
+
+    // Cargar al iniciar
+    cargarTareas();
+</script>
