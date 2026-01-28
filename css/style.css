@@ -1,79 +1,68 @@
 :root {
-    --primary: #007AFF;
-    --success: #34C759;
-    --dark: #1C1C1E;
-    --bg: #F2F2F7;
-    --card: #FFFFFF;
+    --gold: #d4af37;
+    --blue-elite: #3b82f6;
+    --dark-bg: #000000;
+    --card-bg: #1c1c1e;
+    --nav-bg: #121212;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--bg);
+    background-color: var(--dark-bg);
     margin: 0;
-    color: var(--dark);
+    color: white;
+    font-family: -apple-system, sans-serif;
+    overflow-x: hidden;
 }
 
-nav {
-    background: var(--dark);
-    padding: 15px;
+/* El contenedor principal debe tener espacio para el menú inferior */
+#app-viewport {
+    padding-bottom: 90px;
+    min-height: 100vh;
+    transition: opacity 0.3s ease;
+}
+
+/* Menú Inferior */
+.superapp-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 80px;
+    background: var(--nav-bg);
     display: flex;
     justify-content: space-around;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    align-items: center;
+    border-top: 1px solid #2c2c2e;
+    backdrop-filter: blur(10px);
 }
 
-nav button {
-    background: transparent;
-    color: #8E8E93;
+.nav-item {
+    background: none;
     border: none;
-    font-weight: 600;
-    font-size: 12px;
-    padding: 8px 12px;
+    color: #8e8e93;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
     transition: 0.3s;
 }
 
-nav button.active-btn {
-    color: white;
-    background: rgba(255,255,255,0.1);
-    border-radius: 8px;
+.nav-item i { font-size: 20px; }
+.nav-item span { font-size: 10px; font-weight: bold; text-transform: uppercase; }
+
+.nav-item.active {
+    color: var(--blue-elite);
 }
 
-#app-viewport {
-    padding: 20px;
-    max-width: 500px;
-    margin: auto;
+.nav-item.active i {
+    transform: translateY(-5px);
+    color: var(--gold);
 }
 
-.modulo-card {
-    background: var(--card);
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+/* Tarjetas Universales (Para que todo combine) */
+.modulo-card, .container, .form-container, .card {
+    background: var(--card-bg) !important;
+    border-radius: 20px !important;
+    border: 1px solid #2c2c2e !important;
+    margin: 15px !important;
 }
-
-h2, h3 { margin-top: 0; color: var(--dark); }
-
-input, textarea {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #D1D1D6;
-    border-radius: 10px;
-    box-sizing: border-box;
-    font-size: 16px; /* Evita zoom automático en iPhone */
-}
-
-button[type="submit"], .btn-main {
-    width: 100%;
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 15px;
-    border-radius: 12px;
-    font-weight: bold;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
