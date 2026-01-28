@@ -1,38 +1,36 @@
+/* css/style.css */
+
 :root {
     --gold: #d4af37;
     --blue-elite: #3b82f6;
     --dark-bg: #000000;
     --card-bg: #1c1c1e;
     --nav-bg: #121212;
+    --text-gray: #9ca3af;
 }
 
 body {
     background-color: var(--dark-bg);
     margin: 0;
     color: white;
-    font-family: -apple-system, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     overflow-x: hidden;
 }
 
-/* El contenedor principal debe tener espacio para el menú inferior */
-#app-viewport {
-    padding-bottom: 90px;
-    min-height: 100vh;
-    transition: opacity 0.3s ease;
-}
+/* --- DISEÑO DE LA SUPER APP (PORTAL PRINCIPAL) --- */
 
-/* Menú Inferior */
 .superapp-nav {
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 80px;
+    height: 85px;
     background: var(--nav-bg);
     display: flex;
     justify-content: space-around;
     align-items: center;
     border-top: 1px solid #2c2c2e;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px);
+    z-index: 1000;
 }
 
 .nav-item {
@@ -44,25 +42,53 @@ body {
     align-items: center;
     gap: 5px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.nav-item i { font-size: 20px; }
-.nav-item span { font-size: 10px; font-weight: bold; text-transform: uppercase; }
+.nav-item i { font-size: 22px; }
+.nav-item span { font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
 
-.nav-item.active {
-    color: var(--blue-elite);
+.nav-item.active { color: var(--blue-elite); }
+.nav-item.active i { transform: translateY(-5px); color: var(--gold); }
+
+/* --- BOTONES ELITE UNIFICADOS --- */
+
+.btn-reserve, .save-btn, .btn-entrar, .btn-elite-unificado {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    color: white !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 14px !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer;
 }
 
-.nav-item.active i {
-    transform: translateY(-5px);
-    color: var(--gold);
+.btn-reserve:hover, .save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5) !important;
 }
 
-/* Tarjetas Universales (Para que todo combine) */
-.modulo-card, .container, .form-container, .card {
+/* --- TARJETAS Y FORMULARIOS --- */
+
+.container, .form-container, .card, .modulo-card {
     background: var(--card-bg) !important;
     border-radius: 20px !important;
     border: 1px solid #2c2c2e !important;
-    margin: 15px !important;
+    padding: 20px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+}
+
+input, select, textarea {
+    background-color: #0f172a !important;
+    border: 1px solid #334155 !important;
+    border-radius: 10px !important;
+    color: white !important;
+    padding: 12px !important;
+}
+
+/* Espaciado para que el menú no tape el contenido */
+#app-viewport {
+    padding-bottom: 100px;
 }
