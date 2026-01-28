@@ -1,0 +1,53 @@
+<div class="modulo-card">
+    <h3>Panel de Control - Negociaciones</h3>
+    <div id="listaSolicitudes">
+        <p>Buscando nuevas solicitudes...</p>
+    </div>
+</div>
+
+<script>
+    function renderizarSolicitudes() {
+        const contenedor = document.getElementById('listaSolicitudes');
+        // 1. Leer lo que el cliente guardó en la memoria
+        let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
+
+        if (solicitudes.length === 0) {
+            contenedor.innerHTML = "<p>No hay pedidos nuevos por ahora.</p>";
+            return;
+        }
+
+        // 2. Crear la lista de trabajos para el jefe
+        contenedor.innerHTML = solicitudes.map((sol, index) => `
+            <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 8px;">
+                <h4>Servicio: ${sol.servicio}</h4>
+                <p><strong>Descripción:</strong> ${sol.descripcion}</p>
+                <p><strong>Estado:</strong> <span style="color: orange;">${sol.estado}</span></p>
+                
+                <label>Definir Costo ($):</label>
+                <input type="number" id="precio-${index}" placeholder="0.00">
+                <button onclick="confirmarTrabajo(${index})">Confirmar y Enviar a Staff</button>
+            </div>
+        `).join('');
+    }
+
+    function confirmarTrabajo(index) {
+        let solicitudes = JSON.parse(localStorage.getItem('solicitudes'));
+        const precioDefinido = document.getElementById(`precio-${index}`).value;
+
+        if(!precioDefinido) {
+            alert("Por favor, asigna un precio antes de confirmar.");
+            return;
+        }
+
+        // 3. Actualizar el estado (Negociación terminada)
+        solicitudes[index].precio = precioDefinido;
+        solicitudes[index].estado = 'Asignado';
+        
+        localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
+        alert("¡Trabajo enviado al empleado!");
+        renderizarSolicitudes();
+    }
+
+    // Ejecutar al abrir la app
+    renderizarSolicitudes();
+</script>
