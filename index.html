@@ -2,65 +2,77 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UnityApp Business | Unified Portal</title>
-    <style>
-        body { font-family: sans-serif; margin: 0; background: #f4f4f9; }
-        nav { background: #333; padding: 10px; display: flex; justify-content: center; gap: 10px; }
-        button { padding: 10px; cursor: pointer; border: none; border-radius: 5px; background: #eee; }
-        button:hover { background: #ddd; }
-        #app-viewport { padding: 20px; max-width: 800px; margin: auto; background: white; min-height: 80vh; margin-top: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .active-btn { background: #007bff; color: white; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UnityApp | Elite Cleaners</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <nav>
-        <button onclick="switchApp('cliente', this)">App Cliente</button>
-        <button onclick="switchApp('admin', this)">App Admin</button>
-        <button onclick="switchApp('staff', this)">App Staff</button>
-        <button onclick="switchApp('contabilidad', this)">App Contabilidad</button>
+    <div id="app-viewport">
+        <div class="welcome-screen">
+            <img src="assets/logo.png" alt="Elite Logo" style="width: 80px; margin-bottom: 20px;">
+            <h1>ELITE <span>UNITY</span></h1>
+            <p>Selecciona un módulo para operar</p>
+        </div>
+    </div>
+
+    <nav class="superapp-nav">
+        <button onclick="loadModule('cliente', this)" class="nav-item">
+            <i class="fa-solid fa-user-tag"></i>
+            <span>Cliente</span>
+        </button>
+        <button onclick="loadModule('admin', this)" class="nav-item">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Admin</span>
+        </button>
+        <button onclick="loadModule('staff', this)" class="nav-item">
+            <i class="fa-solid fa-broom"></i>
+            <span>Staff</span>
+        </button>
+        <button onclick="loadModule('contabilidad', this)" class="nav-item">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Finanzas</span>
+        </button>
     </nav>
 
-    <main id="app-viewport">
-        <div style="text-align:center; padding-top: 50px;">
-            <h1>UnityApp Business 🚀</h1>
-            <p>Selecciona un módulo arriba para empezar la operación.</p>
-        </div>
-    </main>
-
     <script>
-        async function switchApp(role, btn) {
-            // 1. Limpiar botones
-            const buttons = document.querySelectorAll('button');
-            buttons.forEach(b => b.classList.remove('active-btn'));
-            btn.classList.add('active-btn');
-
+        // FUNCIÓN MAESTRA DE MEZCLA
+        async function loadModule(moduleName, btn) {
             const viewport = document.getElementById('app-viewport');
             
+            // Animación de carga
+            viewport.style.opacity = '0.5';
+            
+            // Cambiar estado visual de botones
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
             try {
-                // 2. LA MAGIA: Buscamos el archivo index.html dentro de cada carpeta
-                const response = await fetch(`./${role}/index.html`);
+                const response = await fetch(`./${moduleName}/index.html`);
                 const html = await response.text();
                 
-                // 3. Extraer solo el contenido dentro del body para no romper la página
+                // Limpiar scripts antiguos para evitar conflictos
+                const oldScripts = document.querySelectorAll('.module-script');
+                oldScripts.forEach(s => s.remove());
+
+                // Inyectar HTML
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
-                const content = doc.body.innerHTML;
+                viewport.innerHTML = doc.body.innerHTML;
                 
-                // 4. Inyectar el contenido y sus scripts
-                viewport.innerHTML = content;
-                
-                // Re-ejecutar los scripts de cada módulo para que funcionen
+                // Ejecutar scripts del módulo
                 const scripts = doc.querySelectorAll('script');
-                scripts.forEach(oldScript => {
+                scripts.forEach(s => {
                     const newScript = document.createElement('script');
-                    newScript.textContent = oldScript.textContent;
-                    document.body.appendChild(newScript).parentNode.removeChild(newScript);
+                    newScript.className = 'module-script';
+                    newScript.textContent = s.textContent;
+                    document.body.appendChild(newScript);
                 });
 
-            } catch (error) {
-                viewport.innerHTML = "<h2>Error</h2><p>No se pudo cargar el módulo. Asegúrate de que el archivo existe.</p>";
+                viewport.style.opacity = '1';
+            } catch (e) {
+                viewport.innerHTML = "<p style='color:white; text-align:center;'>Error cargando el módulo.</p>";
             }
         }
     </script>
