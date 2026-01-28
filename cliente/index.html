@@ -1,37 +1,244 @@
-<div class="modulo-card">
-    <h3>Nueva Solicitud de Trabajo</h3>
-    <form id="orderForm">
-        <label>¿Qué servicio necesitas?</label>
-        <input type="text" id="servicio" placeholder="Ej: Reparar Aire Acondicionado" required>
-        
-        <label>Descripción detallada:</label>
-        <textarea id="descripcion" placeholder="Explica brevemente el problema..." required></textarea>
-        
-        <button type="submit">Enviar al Administrador</button>
-    </form>
-    <p id="mensajeExito" style="color: green; display: none;">✅ ¡Solicitud enviada con éxito!</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Cleaners - Booking Pro</title>
 
-<script>
-    document.getElementById('orderForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <style>
+        :root {
+            --gold: #d4af37;
+            --dark-bg: #121926;
+            --card-bg: #1c2536;
+            --text-gray: #9ca3af;
+            --white: #ffffff;
+            --blue-btn: #2563eb;
+        }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background-color: var(--dark-bg); 
+            margin: 0; padding: 0; color: var(--white); 
+        }
+        .header { text-align: center; padding: 40px 20px 20px 20px; }
+        h1 { font-size: 24px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin: 0; }
+        
+        .container { 
+            max-width: 450px; margin: 0 auto 40px auto; padding: 25px; 
+            background: var(--card-bg); border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
 
-        // 1. Capturar los datos
-        const nuevaSolicitud = {
-            id: Date.now(),
-            servicio: document.getElementById('servicio').value,
-            descripcion: document.getElementById('descripcion').value,
-            estado: 'Pendiente', // El jefe debe negociar esto
-            precio: 0
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-gray); text-transform: uppercase; font-weight: 600; }
+        
+        input, select, textarea { 
+            width: 100%; padding: 14px; 
+            border: 1px solid #334155; border-radius: 10px; 
+            background-color: #0f172a; color: white;
+            box-sizing: border-box; font-size: 15px;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--blue-btn); outline: none; }
+
+        .row { display: flex; gap: 15px; }
+        .row .form-group { flex: 1; }
+
+        .btn-reserve { 
+            background-color: var(--blue-btn); color: white; border: none; 
+            padding: 18px; width: 100%; font-size: 16px; font-weight: bold; 
+            cursor: pointer; border-radius: 12px; transition: 0.3s; 
+            text-transform: uppercase; margin-top: 10px;
+        }
+        .btn-reserve:hover { background-color: #1d4ed8; transform: translateY(-1px); }
+        
+        footer { text-align: center; padding-bottom: 30px; font-size: 11px; color: var(--text-gray); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Elite Cleaners Company</h1>
+    </div>
+
+    <div class="container">
+        <div class="form-group">
+            <label>Customer Name</label>
+            <input type="text" id="nombre" placeholder="Full name">
+        </div>
+
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="telCliente" placeholder="Ex: +1 786 000 0000">
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label>Category</label>
+                <select id="categoria" onchange="toggleFields()">
+                    <option value="Residential">Residential</option>
+                    <option value="Commercial">Commercial</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Service Type</label>
+                <select id="tipo">
+                    <option value="First Cleaning">First Cleaning</option>
+                    <option value="Standard (regular clients)">Standard (regular clients)</option>
+                    <option value="Deep Cleaning">Deep Cleaning</option>
+                    <option value="Move-in">Move-in</option>
+                    <option value="Move-out">Move-out</option>
+                    <option value="Post-Construction">Post-Construction</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="dynamic-fields">
+            <div id="residential-fields" class="row">
+                <div class="form-group">
+                    <label>Bedrooms</label>
+                    <input type="number" id="rooms" placeholder="Qty">
+                </div>
+                <div class="form-group">
+                    <label>Bathrooms</label>
+                    <input type="number" id="baths" placeholder="Qty">
+                </div>
+            </div>
+            <div id="commercial-fields" class="form-group" style="display: none;">
+                <label>Square Footage (Sq Ft)</label>
+                <input type="text" id="sqft" placeholder="Ex: 2500 sq ft">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="fecha">
+            </div>
+            <div class="form-group">
+                <label>Desired Time</label>
+                <input type="time" id="hora">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Service Address</label>
+            <input type="text" id="direccion" placeholder="Street, City, Zip Code">
+        </div>
+
+        <div class="form-group">
+            <label>Special Notes</label>
+            <textarea id="notas" rows="3" placeholder="Instructions, pets, keys, etc..."></textarea>
+        </div>
+
+        <button class="btn-reserve" onclick="enviarReserva()">Submit request</button>
+    </div>
+
+    <footer>
+        © 2026 Elite Cleaners Company | Professional Client Portal
+    </footer>
+
+    <script>
+        // CONFIGURACIÓN DE FIREBASE (USANDO TU KEY EXISTENTE)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDB4F55StoX8WYYzCm8oSnucc-lrH",
+            authDomain: "elite-cleaners-app.firebaseapp.com",
+            projectId: "elite-cleaners-app",
+            storageBucket: "elite-cleaners-app.appspot.com",
+            messagingSenderId: "826642317319",
+            appId: "1:826642317319:web:cddce7904b590ae"
         };
+        
+        // Inicializar Firebase solo si no se ha hecho
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
 
-        // 2. Guardar en la "Base de Datos" (LocalStorage)
-        let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
-        solicitudes.push(nuevaSolicitud);
-        localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
+        function toggleFields() {
+            const cat = document.getElementById('categoria').value;
+            const resFields = document.getElementById('residential-fields');
+            const comFields = document.getElementById('commercial-fields');
+            if (cat === "Residential") {
+                resFields.style.display = "flex";
+                comFields.style.display = "none";
+            } else {
+                resFields.style.display = "none";
+                comFields.style.display = "block";
+            }
+        }
 
-        // 3. Feedback visual
-        document.getElementById('orderForm').reset();
-        document.getElementById('mensajeExito').style.display = 'block';
-    });
-</script>
+        async function enviarReserva() {
+            const nombre = document.getElementById('nombre').value;
+            const telCliente = document.getElementById('telCliente').value;
+            const categoria = document.getElementById('categoria').value;
+            const tipo = document.getElementById('tipo').value;
+            const fecha = document.getElementById('fecha').value;
+            const hora = document.getElementById('hora').value;
+            const direccion = document.getElementById('direccion').value;
+            const notas = document.getElementById('notas').value;
+            
+            if(!nombre || !fecha || !direccion || !telCliente) {
+                alert("Please fill in the required fields: Name, Phone, Date, and Address.");
+                return;
+            }
+
+            let detallesExtra = "";
+            let extraData = {};
+            if (categoria === "Residential") {
+                const rooms = document.getElementById('rooms').value;
+                const baths = document.getElementById('baths').value;
+                detallesExtra = `*Rooms:* ${rooms}%0A*Baths:* ${baths}`;
+                extraData = { rooms, baths };
+            } else {
+                const sqft = document.getElementById('sqft').value;
+                detallesExtra = `*Square Footage:* ${sqft}`;
+                extraData = { sqft };
+            }
+            
+            // 1. GUARDAR EN FIREBASE (Para que Admin lo vea al instante)
+            const nuevaSolicitud = {
+                cliente: nombre,
+                whatsapp: telCliente.replace(/\D/g,''),
+                direccion: direccion,
+                categoria: categoria,
+                tipo: tipo,
+                fecha: fecha,
+                hora: hora,
+                notas: notas || "No notes",
+                estado: "pendiente",
+                ...extraData,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection("servicios").add(nuevaSolicitud);
+                console.log("Sincronizado con Admin");
+                
+                // 2. ENVIAR WHATSAPP (Como respaldo y aviso)
+                const numeroEmpresa = "19253362884"; 
+                const mensaje = `*NEW CLEANING REQUEST*%0A` +
+                              `----------------------------%0A` +
+                              `*Customer:* ${nombre}%0A` +
+                              `*Phone:* ${telCliente}%0A` +
+                              `*Category:* ${categoria}%0A` +
+                              `${detallesExtra}%0A` +
+                              `*Type:* ${tipo}%0A` +
+                              `*Date:* ${fecha}%0A` +
+                              `*Time:* ${hora}%0A` +
+                              `*Address:* ${direccion}%0A` +
+                              `*Notes:* ${notas || "No notes"}%0A` +
+                              `----------------------------`;
+
+                window.open(`https://wa.me/${numeroEmpresa}?text=${mensaje}`, '_blank');
+                alert("Request sent successfully to Admin dashboard and WhatsApp!");
+            } catch (error) {
+                console.error("Error saving to Firebase: ", error);
+                alert("Error sending request. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>
